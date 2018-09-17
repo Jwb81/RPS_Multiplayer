@@ -23,6 +23,13 @@ var opponent;
 var me_guess;
 var opponent_guess;
 
+// hold record
+var record = {
+    wins: 0,
+    ties: 0,
+    losses: 0
+}
+
 // holds all of the games so users can connect to it via the game key
 var gamesRef = database.ref();
 
@@ -87,9 +94,11 @@ var setGameListener = function () {
             if (info.creator != me && info.joiner == me) {
                 opponent = info.creator;
                 setOpponentListener(); // create new listeners with the new opponent variable
+                $('#message').text('You are now connected.  Please select your choice below');
             } else if (info.creator == me && info.joiner != me && info.joiner != undefined) {
                 opponent = info.joiner;
                 setOpponentListener(); // create new listeners with the new opponent variable
+                $('#message').text('You are now connected.  Please select your choice below');
             }
         }
 
@@ -112,69 +121,98 @@ var setMeListener = function () {
 var setOpponentListener = function () {
     database.ref(currentGame + '/' + opponent).on('value', function (snap) {
         // console.log(currentGame + '/' + opponent);
-        console.log(snap.val());
+        // console.log(snap.val());
 
         // get the guess if it is available (it gets reset after each guess)
         if (snap.val().guess != "") {
             opponent_guess = snap.val().guess;
-            var numLosses = snap.val().losses;
-            var numTies = snap.val().ties;
-            var numWins = snap.val().wins;
+            // var numLosses = snap.val().losses;
+            // var numTies = snap.val().ties;
+            // var numWins = snap.val().wins;
 
-            var update = {
-                guess: "",
-            }
-
-            if (opponent_guess == me_guess) {
-                // it's a tie
-
-                numTies++;
-                update.ties = numTies;
-            }
-
-            if ((opponent_guess == 'r' && me_guess == 's') ||
-                (opponent_guess == 'p' && me_guess == 'r') ||
-                (opponent_guess == 's' && me_guess == 'p')) {
-                // opponent wins
-
-                numLosses++;
-                update.losses = numLosses;
-            }
-
-            if ((opponent_guess == 'r' && me_guess == 'p') ||
-                (opponent_guess == 's' && me_guess == 'r') ||
-                (opponent_guess == 'p' && me_guess == 's')) {
-                // I win
-
-                numWins++;
-                update.wins = numWins;
-            }
-
-            // send the new update to the database
-            database.ref(currentGame + '/' + me).update(update);
-            me_guess = null;
-            opponent_guess = null;
+            if (me_guess)
+                determineWinner();
 
         }
 
     })
 }
 
-var determineWinner = function() {
+var getRecord = function() {
+    database.ref(currentGame + '/' + me).once('value', function(snap) {
+        var info = snap.val();
+        record.wins = info.wins;
+        record.ties = info.ties;
+        record.losses = info.losses;
+    })
+}
 
+var determineWinner = function() {
+    var update = {
+        guess: "",
+    }
+
+    var opp;
+    if (opponent_guess == 'r')
+        opp = "rock";
+    if (opponent_guess == 'p')
+        opp = "paper";
+    if (opponent_guess == 's')
+        opp = "scissors";
+    
+    $('#opponent-guess').text(opp);
+
+    if (opponent_guess == me_guess) {
+        // it's a tie
+
+        record.ties++;
+        update.ties = record.ties;
+    }
+
+    if ((opponent_guess == 'r' && me_guess == 's') ||
+        (opponent_guess == 'p' && me_guess == 'r') ||
+        (opponent_guess == 's' && me_guess == 'p')) {
+        // opponent wins
+
+        record.losses++;
+        update.losses = record.losses;
+    }
+
+    if ((opponent_guess == 'r' && me_guess == 'p') ||
+        (opponent_guess == 's' && me_guess == 'r') ||
+        (opponent_guess == 'p' && me_guess == 's')) {
+        // I win
+
+        record.wins++;
+        update.wins = record.wins;
+    }
+
+    // send the new update to the database
+    database.ref(currentGame + '/' + me).update(update);
+    me_guess = null;
+    opponent_guess = null;
 }
 
 
 
 $('.guess-buttons').on('click', '.btn-guess', function() {
     me_guess = $(this).text()[0].toLowerCase();
-    console.log(me_guess);
+    // console.log(me_guess);
+
+    if (!currentGame)
+        return;
 
     database.ref(currentGame + '/' + me).update({
         guess: me_guess
     })
 
+    $('#opponent-guess').text('Waiting for opponent...')
+
     // disable inputs until the opponent has responded
+
+    // check if the opponent has guessed yet
+    if (me_guess && opponent_guess)
+        determineWinner();
 })
 
 
@@ -224,6 +262,8 @@ $('#join-game').on('click', function () {
                     setMeListener();
                     setOpponentListener();
                     setGameListener();
+
+                    $('#message').text('You are now connected.  Please select your choice below');
                 })
             // database.ref(input + '/player2').set(input);
 

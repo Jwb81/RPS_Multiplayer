@@ -18,6 +18,8 @@
 <body>
 
     <div class="container">
+        <p id="message" style='color:red;'>You are not connected to another player yet... Please create
+            a game or join an existing game with a key</p>
         <div class="row">
             <div class="col-md-6 col-sm-12">
                 Game Key: <input type="text" id="game-key" class="form-control">
@@ -28,17 +30,19 @@
                 <button id='create-game'>Create Game</button>
             </div>
         </div>
+        <hr>
         <div class="row">
             <div class="col-md-6 col-sm-12">
                 Game
                 <div class="row">
-                    <div class="col-6 guess-buttons" >
-                        <h4>User Guess</h4>
+                    <div class="col-6 guess-buttons">
                         <button class='btn btn-info btn-guess' id='rock'>Rock</button>
-                        <br />
+                        <!-- <br /> -->
                         <button class='btn btn-info btn-guess' id='paper'>Paper</button>
-                        <br />
+                        <!-- <br /> -->
                         <button class='btn btn-info btn-guess' id='scissors'>Scissors</button>
+                        <h4>Your Guess</h4>
+
                     </div>
                     <div class="col-6">
                         <h4>Opponent Guess</h4>
