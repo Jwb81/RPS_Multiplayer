@@ -22,31 +22,41 @@
             a game or join an existing game with a key</p>
         <div class="row">
             <div class="col-md-6 col-sm-12">
-                Game Key: <input type="text" id="game-key" class="form-control">
+                <div class="form-group row">
+                        <div class="col-sm-3">
+                                <label for='game-key'>Game Key: </label>
+                        </div>
+                        <div class="col-sm-9">
+                            <input type="text" id="game-key" class="form-control">
+                        </div>
+                </div>
+                
             </div>
             <div class="col-md-6 col-sm-12">
                 <button id='join-game'>Join Game</button>
-                <br />
+                <!-- <br /> -->
                 <button id='create-game'>Create Game</button>
+                <button id='delete-game'>Delete Game</button>
             </div>
         </div>
         <hr>
         <div class="row">
             <div class="col-md-6 col-sm-12">
-                Game
+                <div class="guess-buttons">
+                    Select your move:
+                    <img class='btn-guess' data-name='rock' src='assets/images/rock.jpg'>
+                    <img class='btn-guess' data-name='paper' src='assets/images/paper.jpg'>
+                    <img class='btn-guess' data-name='scissors' src='assets/images/scissors.jpg'>
+                </div>
                 <div class="row">
-                    <div class="col-6 guess-buttons">
-                        <button class='btn btn-info btn-guess' id='rock'>Rock</button>
-                        <!-- <br /> -->
-                        <button class='btn btn-info btn-guess' id='paper'>Paper</button>
-                        <!-- <br /> -->
-                        <button class='btn btn-info btn-guess' id='scissors'>Scissors</button>
+                    <div class="col-6" id='my-guess' style=''>
                         <h4>Your Guess</h4>
+                        <p id="my-guess-img"></p>
 
                     </div>
-                    <div class="col-6">
+                    <div class="col-6" id='opponent-guess' style=''>
                         <h4>Opponent Guess</h4>
-                        <p id='opponent-guess'></p>
+                        <p id='opponent-guess-img'></p>
                     </div>
                 </div>
             </div>
@@ -56,16 +66,17 @@
                 <div class="message">
                     <h6>jayb21</h6>
                 </div>
-                <p>hello</p>
-                <p>testing a comment </p>
-                <p>This is a chat box</p>
-                <p>I'm a bot</p>
+                <input type='text' id='new-message' placeholder='Chat here...'><button id='add-message'>Send!</button>
+                
             </div>
         </div>
         <div class="row">
+            Results
+            <hr>
             <div class="col-12">
-                Stats
-                <hr>
+                Wins: <span id='wins'>-</span>
+                Ties: <span id='ties'>-</span>
+                Losses: <span id='losses'>-</span>
             </div>
         </div>
     </div>

@@ -30,6 +30,12 @@ var record = {
     losses: 0
 }
 
+var images = {
+    r: 'assets/images/rock.jpg',
+    p: 'assets/images/paper.jpg',
+    s: 'assets/images/scissors.jpg'
+}
+
 // holds all of the games so users can connect to it via the game key
 var gamesRef = database.ref();
 
@@ -147,20 +153,20 @@ var getRecord = function() {
     })
 }
 
+var updateResults = function() {
+    $('#wins').text(record.wins);
+    $('#ties').text(record.ties);
+    $('#losses').text(record.losses);
+}
+
 var determineWinner = function() {
     var update = {
         guess: "",
     }
 
-    var opp;
-    if (opponent_guess == 'r')
-        opp = "rock";
-    if (opponent_guess == 'p')
-        opp = "paper";
-    if (opponent_guess == 's')
-        opp = "scissors";
-    
-    $('#opponent-guess').text(opp);
+    $('#opponent-guess-img').html(
+        '<img class="my-selection" src=' + images[opponent_guess] + '>'
+    );
 
     if (opponent_guess == me_guess) {
         // it's a tie
@@ -191,13 +197,15 @@ var determineWinner = function() {
     database.ref(currentGame + '/' + me).update(update);
     me_guess = null;
     opponent_guess = null;
+
+    updateResults();
 }
 
 
 
 $('.guess-buttons').on('click', '.btn-guess', function() {
-    me_guess = $(this).text()[0].toLowerCase();
-    // console.log(me_guess);
+    me_guess = $(this).data('name')[0].toLowerCase();
+    console.log(me_guess);
 
     if (!currentGame)
         return;
@@ -206,8 +214,16 @@ $('.guess-buttons').on('click', '.btn-guess', function() {
         guess: me_guess
     })
 
-    $('#opponent-guess').text('Waiting for opponent...')
+    // clear the borders from any previously selected one
+    $('.btn-guess').removeClass('guess-selected');
 
+    // set the border on the selected guess
+    $(this).addClass('guess-selected');
+
+    $('#opponent-guess-img').text('Waiting for opponent...')
+    $('#my-guess-img').html(
+        '<img class="my-selection" src=' + images[me_guess] + '>'
+    )
     // disable inputs until the opponent has responded
 
     // check if the opponent has guessed yet

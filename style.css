@@ -1,0 +1,21 @@
+.guess-buttons img {
+    height: 60px;
+    margin: 10px;
+    padding: 5px;
+}
+.guess-selected {
+    border: 1px solid rgba(0,0,0,150);
+}
+
+.guess-buttons img:hover {
+    cursor: pointer;
+}
+
+#my-guess, #opponent-guess {
+    width: 100%;
+    text-align: center;
+}
+
+.my-selection {
+    height: 100px;
+}
