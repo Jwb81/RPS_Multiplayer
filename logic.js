@@ -19,6 +19,10 @@ var currentGame;
 var me;
 var opponent;
 
+// hold guesses
+var me_guess;
+var opponent_guess;
+
 // holds all of the games so users can connect to it via the game key
 var gamesRef = database.ref();
 
@@ -73,10 +77,10 @@ var connectedRef = database.ref(".info/connected");
 //     console.log(snap.val());
 // })
 
-var setGameListener = function() {
+var setGameListener = function () {
     database.ref(currentGame).on('value', function (snap) {
         let info = snap.val();
-        console.log(info);
+        // console.log(info);
 
         // get the opponents reference ID
         if (!opponent) {
@@ -88,24 +92,90 @@ var setGameListener = function() {
                 setOpponentListener(); // create new listeners with the new opponent variable
             }
         }
+
+        // check if the game is ready to start
+        if (info.gameStarted) {
+
+            // get the opponent's guess if it is available
+
+        }
     })
 }
 
-var setMeListener = function() {
+var setMeListener = function () {
     database.ref(currentGame + '/' + me).on('value', function (snap) {
-        console.log(currentGame + '/' + me);
-        console.log(snap.val());
+        // console.log(currentGame + '/' + me);
+        // console.log(snap.val());
     })
 }
 
-var setOpponentListener = function() {
+var setOpponentListener = function () {
     database.ref(currentGame + '/' + opponent).on('value', function (snap) {
-        console.log(currentGame + '/' + opponent);
+        // console.log(currentGame + '/' + opponent);
         console.log(snap.val());
+
+        // get the guess if it is available (it gets reset after each guess)
+        if (snap.val().guess != "") {
+            opponent_guess = snap.val().guess;
+            var numLosses = snap.val().losses;
+            var numTies = snap.val().ties;
+            var numWins = snap.val().wins;
+
+            var update = {
+                guess: "",
+            }
+
+            if (opponent_guess == me_guess) {
+                // it's a tie
+
+                numTies++;
+                update.ties = numTies;
+            }
+
+            if ((opponent_guess == 'r' && me_guess == 's') ||
+                (opponent_guess == 'p' && me_guess == 'r') ||
+                (opponent_guess == 's' && me_guess == 'p')) {
+                // opponent wins
+
+                numLosses++;
+                update.losses = numLosses;
+            }
+
+            if ((opponent_guess == 'r' && me_guess == 'p') ||
+                (opponent_guess == 's' && me_guess == 'r') ||
+                (opponent_guess == 'p' && me_guess == 's')) {
+                // I win
+
+                numWins++;
+                update.wins = numWins;
+            }
+
+            // send the new update to the database
+            database.ref(currentGame + '/' + me).update(update);
+            me_guess = null;
+            opponent_guess = null;
+
+        }
+
     })
 }
 
+var determineWinner = function() {
 
+}
+
+
+
+$('.guess-buttons').on('click', '.btn-guess', function() {
+    me_guess = $(this).text()[0].toLowerCase();
+    console.log(me_guess);
+
+    database.ref(currentGame + '/' + me).update({
+        guess: me_guess
+    })
+
+    // disable inputs until the opponent has responded
+})
 
 
 $('#join-game').on('click', function () {
@@ -127,12 +197,14 @@ $('#join-game').on('click', function () {
     gamesRef.once('value', function (snap) {
         var info = snap.val();
 
-        if (snap.child(input).player2 != undefined) {
-            console.log("There are already two players... You cannot join");
-            return;
-        }
+
         if (snap.hasChild(input)) {
             // console.log(snap.val()[input].creator);
+
+            if (info[input].joiner != undefined && info[input].joiner != "") {
+                console.log("There are already two players... You cannot join");
+                return;
+            }
 
             database.ref(input)
                 .push(playerObj)
@@ -143,6 +215,12 @@ $('#join-game').on('click', function () {
 
                     opponent = info[input].creator;
                     currentGame = input;
+
+                    // set the gameStart to true
+                    database.ref(input).update({
+                        gameStarted: true
+                    })
+
                     setMeListener();
                     setOpponentListener();
                     setGameListener();
@@ -153,8 +231,9 @@ $('#join-game').on('click', function () {
         } else
             alert('DNE');
 
-        
+
     })
+
 
 });
 
@@ -175,6 +254,7 @@ $('#create-game').on('click', function () {
                 messages: [],
                 creator: null,
                 joiner: null,
+                gameStarted: false
             }
 
             var playerObj = {
