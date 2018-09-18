@@ -161,7 +161,7 @@ var setOpponentListener = function () {
                 determineWinner();
 
         }
-
+document.get
     })
 }
 

@@ -65,7 +65,7 @@ body > .container {
 
 .row-guess, 
 .row-results {
-    height: 50%;
+    /* height: 50%; */
     /* border: 1px solid red; */
     padding: 10px;
 }
