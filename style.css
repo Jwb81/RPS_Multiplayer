@@ -1,3 +1,24 @@
+body {
+    /* background-color: rgb(47, 130, 255); */
+    background-color: rgb(236, 239, 241);
+}
+
+body > .container {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-radius: 5px;
+    box-shadow: -1px -1px 5px grey;
+    background-color: rgb(230, 230, 240);
+}
+
+#setup {
+
+}
+
+.input-error {
+    border: 1px solid rgba(255,0,0,0.4);
+}
+
 .guess-buttons img {
     height: 60px;
     margin: 10px;
@@ -11,11 +32,49 @@
     cursor: pointer;
 }
 
-#my-guess, #opponent-guess {
+#my-guess, 
+#opponent-guess {
     width: 100%;
     text-align: center;
 }
 
-.my-selection {
+.move-selected {
     height: 100px;
+}
+
+.scaleup {
+    transition: all 1s;
+    animation-name: scaleup;
+}
+
+@keyframes scaleup {
+    from {
+        height: 100px;
+    }
+    to {
+        height: 150px;
+    }
+}
+
+#messages {
+    border: 1px solid gray;
+    overflow-y: scroll;
+    padding: 5px;
+    height: 500px;;
+}
+
+.row-guess, 
+.row-results {
+    height: 50%;
+    /* border: 1px solid red; */
+    padding: 10px;
+}
+.row-results {
+    text-align: center;
+}
+
+#game-board {
+    background-color: rgb(245, 245, 245);
+    padding-bottom: 10px;
+    padding-top: 10px;
 }

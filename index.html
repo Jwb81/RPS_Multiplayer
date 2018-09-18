@@ -16,71 +16,84 @@
 </head>
 
 <body>
-
     <div class="container">
         <p id="message" style='color:red;'>You are not connected to another player yet... Please create
             a game or join an existing game with a key</p>
-        <div class="row">
+        <div class="row" id='setup'>
             <div class="col-md-6 col-sm-12">
                 <div class="form-group row">
-                        <div class="col-sm-3">
-                                <label for='game-key'>Game Key: </label>
-                        </div>
-                        <div class="col-sm-9">
-                            <input type="text" id="game-key" class="form-control">
-                        </div>
+                    <div class="col-sm-3">
+                        <label for='game-key'>Game Key: </label>
+                    </div>
+                    <div class="col-sm-9">
+                        <input type="text" id="game-key" class="form-control">
+                    </div>
                 </div>
-                
+                <div class="form-group row">
+                    <div class="col-sm-3">
+                        <label for='username'>Username: </label>
+                    </div>
+                    <div class="col-sm-9">
+                        <input type="text" id="username" class="form-control">
+                    </div>
+                </div>
+
             </div>
             <div class="col-md-6 col-sm-12">
-                <button id='join-game'>Join Game</button>
+                <button id='join-game' class='btn btn-success'>Join Game</button>
                 <!-- <br /> -->
-                <button id='create-game'>Create Game</button>
-                <button id='delete-game'>Delete Game</button>
+                <button id='create-game' class='btn btn-primary'>Create Game</button>
+                <button id='delete-game' class='btn btn-danger'>Delete Game</button>
             </div>
         </div>
-        <hr>
-        <div class="row">
+        <!-- <hr> -->
+        <div class="row" id='game-board' style='display:none;'>
             <div class="col-md-6 col-sm-12">
-                <div class="guess-buttons">
-                    Select your move:
-                    <img class='btn-guess' data-name='rock' src='assets/images/rock.jpg'>
-                    <img class='btn-guess' data-name='paper' src='assets/images/paper.jpg'>
-                    <img class='btn-guess' data-name='scissors' src='assets/images/scissors.jpg'>
+                <div class="row row-guess">
+                    <div class="col-12">
+                        <div class="guess-buttons">
+                            Select your move:
+                            <img class='btn-guess' data-name='rock' src='assets/images/rock.jpg'>
+                            <img class='btn-guess' data-name='paper' src='assets/images/paper.jpg'>
+                            <img class='btn-guess' data-name='scissors' src='assets/images/scissors.jpg'>
+                        </div>
+                        <div class="row">
+                            <div class="col-6" id='my-guess' style=''>
+                                <h4>Your Guess</h4>
+                                <p id="my-guess-img"></p>
+
+                            </div>
+                            <div class="col-6" id='opponent-guess' style=''>
+                                <h4>Opponent Guess</h4>
+                                <p id='opponent-guess-img'></p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="row">
-                    <div class="col-6" id='my-guess' style=''>
-                        <h4>Your Guess</h4>
-                        <p id="my-guess-img"></p>
+                <div class="row row-results">
+                    <div class='col-12'>
+                        <h2>Results</h2>
+                        <p>Wins: <span id='wins'>-</span></p>
+                        <p>Ties: <span id='ties'>-</span></p>
+                        <p>Losses: <span id='losses'>-</span></p>
 
                     </div>
-                    <div class="col-6" id='opponent-guess' style=''>
-                        <h4>Opponent Guess</h4>
-                        <p id='opponent-guess-img'></p>
-                    </div>
                 </div>
             </div>
             <div class="col-md-6 col-sm-12">
-                Chat
-                <hr>
-                <div class="message">
-                    <h6>jayb21</h6>
+                <div id="messages">
+                    <p style='color:gray;'>Here is the beginning of your chat!</p>
                 </div>
-                <input type='text' id='new-message' placeholder='Chat here...'><button id='add-message'>Send!</button>
-                
+                <form class='form-inline' >
+                    <input type='text' class='form-control' id='new-message' placeholder='Chat here...' style='width:80%;'>
+                    <button id='add-message' class='form-control' style='width:20%;'>Send!</button>
+
+                </form>
+
             </div>
         </div>
-        <div class="row">
-            Results
-            <hr>
-            <div class="col-12">
-                Wins: <span id='wins'>-</span>
-                Ties: <span id='ties'>-</span>
-                Losses: <span id='losses'>-</span>
-            </div>
-        </div>
+
     </div>
-
 
     <!-- scripts -->
     <!-- Firebase App is always required and must be first -->

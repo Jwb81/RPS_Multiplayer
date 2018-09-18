@@ -19,6 +19,9 @@ var currentGame;
 var me;
 var opponent;
 
+// hold the username of the user
+var username;
+
 // hold guesses
 var me_guess;
 var opponent_guess;
@@ -100,10 +103,12 @@ var setGameListener = function () {
             if (info.creator != me && info.joiner == me) {
                 opponent = info.creator;
                 setOpponentListener(); // create new listeners with the new opponent variable
+                $('#game-board').show();
                 $('#message').text('You are now connected.  Please select your choice below');
             } else if (info.creator == me && info.joiner != me && info.joiner != undefined) {
                 opponent = info.joiner;
                 setOpponentListener(); // create new listeners with the new opponent variable
+                $('#game-board').show();
                 $('#message').text('You are now connected.  Please select your choice below');
             }
         }
@@ -114,6 +119,22 @@ var setGameListener = function () {
             // get the opponent's guess if it is available
 
         }
+    })
+
+    // get the last message and append it to the chat
+    database.ref(currentGame + '/chat').orderByChild('timeAdded').limitToLast(1).on('child_added', function(snap) {
+        var info = snap.val();
+        console.log(info);
+
+        var color;
+        if (info.username == username) 
+            color = 'blue;';
+        else
+            color = 'red';
+
+        $('#messages').append(
+            '<p class="chat-message"> <span class="" style="color:' + color + '">'  + info.username + ': </span>' + info.message + '</p>'
+        )
     })
 }
 
@@ -165,7 +186,7 @@ var determineWinner = function() {
     }
 
     $('#opponent-guess-img').html(
-        '<img class="my-selection" src=' + images[opponent_guess] + '>'
+        '<img class="move-selected" src=' + images[opponent_guess] + '>'
     );
 
     if (opponent_guess == me_guess) {
@@ -201,14 +222,40 @@ var determineWinner = function() {
     updateResults();
 }
 
+var setErrors = function() {
+    $('#game-key').addClass('input-error');
+    $('#username').addClass('input-error');
+}
 
+var clearErrors = function() {
+    $('#game-key').removeClass('input-error');
+    $('#username').removeClass('input-error');
+}
+
+
+// click handler for 'add-message' (when a user submits a new chat repsonse)
+$('#add-message').on('click', function(evt) {
+    evt.preventDefault();
+
+    let response = $('#new-message').val(); 
+    $('#new-message').val(''); 
+
+    database.ref(currentGame + '/chat').push({
+        username: username,
+        message: response,
+        timeAdded: firebase.database.ServerValue.TIMESTAMP
+    })
+})
 
 $('.guess-buttons').on('click', '.btn-guess', function() {
     me_guess = $(this).data('name')[0].toLowerCase();
-    console.log(me_guess);
 
-    if (!currentGame)
+    clearErrors();
+
+    if (!currentGame) {
+        setErrors();
         return;
+    }
 
     database.ref(currentGame + '/' + me).update({
         guess: me_guess
@@ -222,7 +269,7 @@ $('.guess-buttons').on('click', '.btn-guess', function() {
 
     $('#opponent-guess-img').text('Waiting for opponent...')
     $('#my-guess-img').html(
-        '<img class="my-selection" src=' + images[me_guess] + '>'
+        '<img class="move-selected" src=' + images[me_guess] + '>'
     )
     // disable inputs until the opponent has responded
 
@@ -234,9 +281,14 @@ $('.guess-buttons').on('click', '.btn-guess', function() {
 
 $('#join-game').on('click', function () {
     var input = $('#game-key').val();
+    username = $('#username').val();
 
-    if (!input)
+    clearErrors();
+
+    if (!input || !username) {
+        setErrors();
         return;
+    }
 
     // var gamesRef = database.ref();
     // console.log(input);
@@ -278,6 +330,7 @@ $('#join-game').on('click', function () {
                     setMeListener();
                     setOpponentListener();
                     setGameListener();
+                    $('#game-board').show();
 
                     $('#message').text('You are now connected.  Please select your choice below');
                 })
@@ -295,9 +348,14 @@ $('#join-game').on('click', function () {
 
 $('#create-game').on('click', function () {
     var input = $('#game-key').val();
+    username = $('#username').val();
+    
+    clearErrors();
 
-    if (!input)
+    if (!input || !username) {
+        setErrors();
         return;
+    }
 
     gamesRef.once('value', function (snap) {
         if (snap.hasChild(input)) {
